@@ -1,0 +1,28 @@
+# Define the path to Loki executable and configuration file
+$lokiExePath = "F:\Loki\Loki\loki-windows-amd64.exe"
+$lokiConfigPath = "F:\Loki\Loki\configureLoki.yaml"
+
+# Define the name of the service
+$serviceName = "Loki"
+
+# Define the display name and description for the service
+$displayName = "Loki Logging Service"
+$description = "Service for running Grafana Loki log aggregation."
+
+# Check if the service already exists
+if (Get-Service -Name $serviceName -ErrorAction SilentlyContinue) {
+    Write-Host "Service '$serviceName' already exists. Exiting."
+    exit
+}
+
+# Register the service using New-Service cmdlet
+New-Service -Name $serviceName `
+            -BinaryPathName "$lokiExePath -config.file=$lokiConfigPath" `
+            -DisplayName $displayName `
+            -Description $description `
+            -StartupType Automatic
+
+# Start the Loki service
+Start-Service -Name $serviceName
+
+Write-Host "Loki service registered and started successfully."
